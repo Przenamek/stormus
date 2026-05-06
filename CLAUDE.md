@@ -46,16 +46,21 @@ stormet-game/
 **Sprint 1 — Runner MVP**
 
 ## Do zrobienia w Sprint 1
-- [ ] Boilerplate Phaser 3 działający na GitHub Pages
-- [ ] RunnerScene: Stormuś biegnie, 3 tory
-- [ ] Sterowanie: klawiatura (strzałki + spacja) + podstawowy touch
-- [ ] Generowanie złomu (klasy A/B/C) na torach
-- [ ] Kolekcjonowanie: licznik złomu w worku
-- [ ] Ekran wyniku (prosty ResultScene)
-- [ ] Commit + push + GitHub Pages live
+- [x] Boilerplate Phaser 3 działający na GitHub Pages
+- [x] RunnerScene: Stormuś biegnie, 3 tory
+- [x] Sterowanie: klawiatura (strzałki + spacja) + podstawowy touch
+- [x] Generowanie złomu (klasy A/B/C) na torach
+- [x] Kolekcjonowanie: licznik złomu w worku
+- [x] Ekran wyniku (prosty ResultScene)
+- [x] Commit + push + GitHub Pages live
 
 ## Ostatnio zrobione
-[CC uzupełnia po każdej sesji]
+- **Sprint 1 (06.05.2026)**:
+  - Zbudowano całą podstawową strukturę gry MVP w Phaser 3.
+  - Zaimplementowano `index.html` z importem Phasera z CDN.
+  - Skonfigurowano maszynę stanów gry z podziałem na `BootScene`, `MenuScene`, `RunnerScene` i `ResultScene`.
+  - Stworzono grywalny prototyp `RunnerScene` w którym postać "Stormuś" porusza się po 3 torach, zbierając obiekty "ScrapItem" (złom klas A, B, C) oraz unikając przeszkód (GRUZ).
+  - Wdrożono punktację bazującą na typach obiektów oraz timer ograniczający czas rundy do 60s.
 
 ---
 
