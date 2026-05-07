@@ -219,6 +219,20 @@ export default class CleanerScene extends Phaser.Scene {
         const targetY = this.playerPos.y + this.facing.y;
         const key = `${targetX},${targetY}`;
 
+        // DEBUG: Check cell type in front
+        let cellType = 'OUT_OF_BOUNDS';
+        if (targetX >= 0 && targetX < this.gridSize && targetY >= 0 && targetY < this.gridSize) {
+            if (this.machines.has(key)) cellType = 'MACHINE';
+            else if (targetX === 0 || (targetY === 7 && targetX > 0)) cellType = 'BELT';
+            else if (targetX === 7 && targetY === 0) cellType = 'SKUP';
+            else if (this.isBlat(targetX, targetY)) cellType = 'BLAT';
+            else cellType = 'FLOOR';
+        }
+
+        console.log(`[SPACJA] Pos:(${this.playerPos.x},${this.playerPos.y}) Dir:(${this.facing.x},${this.facing.y}) Target:(${targetX},${targetY}) Type:${cellType} Held:${this.heldItem ? this.heldItem.type : 'null'}`);
+
+        if (targetX < 0 || targetX >= this.gridSize || targetY < 0 || targetY >= this.gridSize) return;
+
         // 1. Check for machine interaction
         if (this.machines.has(key)) {
             const machine = this.machines.get(key);
@@ -256,6 +270,17 @@ export default class CleanerScene extends Phaser.Scene {
                     item.sprite.destroy();
                     this.itemsOnBelt.splice(itemIndex, 1);
                 }
+            } else {
+                // Put item on belt
+                const sprite = this.add.rectangle(targetX * this.tileSize + this.tileSize / 2, targetY * this.tileSize + this.tileSize / 2 + 50, 40, 40, this.getItemColor(this.heldItem.type)).setDepth(5);
+                this.itemsOnBelt.push({
+                    gridX: targetX,
+                    gridY: targetY,
+                    type: this.heldItem.type,
+                    sprite: sprite
+                });
+                this.heldItem = null;
+                this.heldItemSprite.setVisible(false);
             }
             return;
         }
