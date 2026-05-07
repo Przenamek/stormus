@@ -12,7 +12,7 @@ export default class RunnerScene extends Phaser.Scene {
 
         // Statystyki
         this.scores = { A: 0, B: 0, C: 0 };
-        this.timeLeft = 60;
+        this.timeLeft = 5;
         this.gameSpeed = 300; // px/s przesuwania elementów
 
         // Tło
@@ -45,7 +45,7 @@ export default class RunnerScene extends Phaser.Scene {
         // UI
         this.uiBg = this.add.rectangle(0, 0, this.width, 40, 0x000000).setOrigin(0).setAlpha(0.7);
         this.bagText = this.add.text(10, 10, 'Worek: A:0 B:0 C:0', { fontSize: '18px', fill: '#fff', fontStyle: 'bold' });
-        this.timerText = this.add.text(this.width - 10, 10, 'Czas: 60s', { fontSize: '18px', fill: '#fff', fontStyle: 'bold' }).setOrigin(1, 0);
+        this.timerText = this.add.text(this.width - 10, 10, 'Czas: 5s', { fontSize: '18px', fill: '#fff', fontStyle: 'bold' }).setOrigin(1, 0);
 
         // Sterowanie
         this.cursors = this.input.keyboard.createCursorKeys();
