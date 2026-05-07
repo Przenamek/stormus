@@ -181,10 +181,19 @@ export default class CleanerScene extends Phaser.Scene {
         this.playerContainer.y = this.playerPos.y * this.tileSize + this.tileSize / 2;
         
         // Rotate indicator based on facing
-        if (this.facing.x === 1) this.directionIndicator.setAngle(90);
-        else if (this.facing.x === -1) this.directionIndicator.setAngle(-90);
-        else if (this.facing.y === 1) this.directionIndicator.setAngle(180);
-        else if (this.facing.y === -1) this.directionIndicator.setAngle(0);
+        if (this.facing.x === 1) {
+            this.directionIndicator.setAngle(90);
+            this.heldItemSprite.setPosition(40, 0);
+        } else if (this.facing.x === -1) {
+            this.directionIndicator.setAngle(-90);
+            this.heldItemSprite.setPosition(-40, 0);
+        } else if (this.facing.y === 1) {
+            this.directionIndicator.setAngle(180);
+            this.heldItemSprite.setPosition(0, 40);
+        } else if (this.facing.y === -1) {
+            this.directionIndicator.setAngle(0);
+            this.heldItemSprite.setPosition(0, -40);
+        }
     }
 
     handleInteraction() {
@@ -220,8 +229,10 @@ export default class CleanerScene extends Phaser.Scene {
         // 2. Check for belt interaction
         if (targetX === 0 || (targetY === 7 && targetX > 0)) {
             if (!this.heldItem) {
-                // Try pick up from belt
-                const itemIndex = this.itemsOnBelt.findIndex(i => i.gridX === targetX && i.gridY === targetY);
+                // Try pick up from belt - comparing grid indices (rounded)
+                const itemIndex = this.itemsOnBelt.findIndex(i => 
+                    Math.round(i.gridX) === targetX && Math.round(i.gridY) === targetY
+                );
                 if (itemIndex !== -1) {
                     const item = this.itemsOnBelt[itemIndex];
                     this.pickUpItem(item.type);
