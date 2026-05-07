@@ -166,9 +166,10 @@ export default class RunnerScene extends Phaser.Scene {
     }
 
     endRound() {
-        const totalRunnerScore = (this.scores.A * 100) + (this.scores.B * 60) - (this.scores.C * 20);
-        this.scene.start('CleanerScene', { 
-            runnerScore: totalRunnerScore 
+        this.scene.start('ResultScene', { 
+            scoreA: this.scores.A, 
+            scoreB: this.scores.B, 
+            scoreC: this.scores.C 
         });
     }
 }

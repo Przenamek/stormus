@@ -45,8 +45,8 @@ export default class CleanerScene extends Phaser.Scene {
         // Setup Player
         this.player = this.add.circle(0, 0, 40, 0xffffff).setStrokeStyle(4, 0x333333);
         this.heldItemSprite = this.add.rectangle(20, -20, 24, 24, 0x000000).setVisible(false);
-        // Triangle indicator for direction
-        this.directionIndicator = this.add.triangle(0, 0, 0, -50, 10, -35, -10, -35, 0xff0000);
+        // Triangle indicator for direction (15px)
+        this.directionIndicator = this.add.triangle(0, 0, 0, -42, 7.5, -27, -7.5, -27, 0xff0000);
         
         this.playerContainer = this.add.container(0, 0, [this.player, this.heldItemSprite, this.directionIndicator]);
         this.updatePlayerVisualPosition();
@@ -135,8 +135,9 @@ export default class CleanerScene extends Phaser.Scene {
                 this.tryMove(move.x, move.y);
             }
 
-            if (event.code === 'Space') {
+            if (event.code === 'Space' || event.key === ' ') {
                 this.handleInteraction();
+                event.preventDefault();
             }
         });
     }
