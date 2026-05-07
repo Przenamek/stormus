@@ -4,9 +4,10 @@ export default class ResultScene extends Phaser.Scene {
     }
 
     init(data) {
-        this.scoreA = data.scoreA || 0;
-        this.scoreB = data.scoreB || 0;
-        this.scoreC = data.scoreC || 0;
+        this.runnerScore = data.runnerScore || 0;
+        this.cleanerScore = data.cleanerScore || 0;
+        this.wsady = data.wsady || 0;
+        this.stars = data.stars || 0;
     }
 
     create() {
@@ -27,14 +28,19 @@ export default class ResultScene extends Phaser.Scene {
         const startY = height * 0.35;
         const spacing = 40;
 
-        this.add.text(width / 2, startY, `Złom A: ${this.scoreA} x 100 pkt`, { fontSize: '24px', fill: '#4CAF50' }).setOrigin(0.5);
-        this.add.text(width / 2, startY + spacing, `Złom B: ${this.scoreB} x 60 pkt`, { fontSize: '24px', fill: '#FFEB3B' }).setOrigin(0.5);
-        this.add.text(width / 2, startY + spacing * 2, `Złom C: ${this.scoreC} x (-20) pkt`, { fontSize: '24px', fill: '#F44336' }).setOrigin(0.5);
+        this.add.text(width / 2, startY, `Wynik biegu: ${this.runnerScore} pkt`, { fontSize: '28px', fill: '#4CAF50' }).setOrigin(0.5);
+        this.add.text(width / 2, startY + spacing, `Wydane grudy: ${this.wsady} (${this.cleanerScore} pkt)`, { fontSize: '28px', fill: '#2196F3' }).setOrigin(0.5);
+        
+        let starsStr = '';
+        for(let i=0; i<this.stars; i++) starsStr += '★';
+        for(let i=this.stars; i<3; i++) starsStr += '☆';
+        
+        this.add.text(width / 2, startY + spacing * 2, `Gwiazdki: ${starsStr}`, { fontSize: '36px', fill: '#FFEB3B' }).setOrigin(0.5);
 
-        const totalScore = (this.scoreA * 100) + (this.scoreB * 60) - (this.scoreC * 20);
+        const totalScore = this.runnerScore + this.cleanerScore;
 
-        this.add.text(width / 2, startY + spacing * 4, `WYNIK: ${totalScore}`, {
-            fontSize: '40px',
+        this.add.text(width / 2, startY + spacing * 4, `ŁĄCZNY WYNIK: ${totalScore}`, {
+            fontSize: '48px',
             fontFamily: 'Arial',
             fill: '#ff9900',
             fontStyle: 'bold'

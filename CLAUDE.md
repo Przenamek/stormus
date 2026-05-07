@@ -43,7 +43,7 @@ stormet-game/
 ```
 
 ## Aktualna faza
-**Sprint 1 — Runner MVP**
+**Sprint 2 — Oczyszczalnia MVP**
 
 ## Do zrobienia w Sprint 1
 - [x] Boilerplate Phaser 3 działający na GitHub Pages
@@ -61,6 +61,13 @@ stormet-game/
   - Skonfigurowano maszynę stanów gry z podziałem na `BootScene`, `MenuScene`, `RunnerScene` i `ResultScene`.
   - Stworzono grywalny prototyp `RunnerScene` w którym postać "Stormuś" porusza się po 3 torach, zbierając obiekty "ScrapItem" (złom klas A, B, C) oraz unikając przeszkód (GRUZ).
   - Wdrożono punktację bazującą na typach obiektów oraz timer ograniczający czas rundy do 60s.
+- **Sprint 2 (07.05.2026)**:
+  - Zaimplementowano `CleanerScene` z mechaniką "Overcooked".
+  - Stworzono klasę `Machine.js` obsługującą różne typy urządzeń (Opony, Beton, Drewno, Spawarka).
+  - Wdrożono siatkę 8x8 (880x880px) z taśmociągiem w kształcie litery L.
+  - Dodano interakcje: podnoszenie/odkładanie złomu, przetwarzanie w maszynach, spawanie grud i wydawanie do skupu.
+  - Zaktualizowano `ResultScene` o wyświetlanie wyników z obu faz gry oraz system gwiazdek.
+  - Domknięto pętlę gry: Runner -> Oczyszczalnia -> Wynik.
 
 ---
 

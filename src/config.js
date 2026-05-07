@@ -1,12 +1,13 @@
 import BootScene from './scenes/BootScene.js';
 import MenuScene from './scenes/MenuScene.js';
 import RunnerScene from './scenes/RunnerScene.js';
+import CleanerScene from './scenes/CleanerScene.js';
 import ResultScene from './scenes/ResultScene.js';
 
 const config = {
     type: Phaser.AUTO,
-    width: 480,
-    height: 800,
+    width: 880,
+    height: 880,
     parent: document.body,
     physics: {
         default: 'arcade',
@@ -15,7 +16,7 @@ const config = {
             debug: false
         }
     },
-    scene: [BootScene, MenuScene, RunnerScene, ResultScene],
+    scene: [BootScene, MenuScene, RunnerScene, CleanerScene, ResultScene],
     scale: {
         mode: Phaser.Scale.FIT,
         autoCenter: Phaser.Scale.CENTER_BOTH
