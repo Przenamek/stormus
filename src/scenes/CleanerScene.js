@@ -45,7 +45,10 @@ export default class CleanerScene extends Phaser.Scene {
         // Setup Player
         this.player = this.add.circle(0, 0, 40, 0xffffff).setStrokeStyle(4, 0x333333);
         this.heldItemSprite = this.add.rectangle(20, -20, 24, 24, 0x000000).setVisible(false);
-        this.playerContainer = this.add.container(0, 0, [this.player, this.heldItemSprite]);
+        // Triangle indicator for direction
+        this.directionIndicator = this.add.triangle(0, 0, 0, -50, 10, -35, -10, -35, 0xff0000);
+        
+        this.playerContainer = this.add.container(0, 0, [this.player, this.heldItemSprite, this.directionIndicator]);
         this.updatePlayerVisualPosition();
 
         // UI
@@ -142,24 +145,45 @@ export default class CleanerScene extends Phaser.Scene {
         let newX = this.playerPos.x + dx;
         let newY = this.playerPos.y + dy;
 
+        // Update facing direction ALWAYS, even if we don't move
+        if (dx !== 0) this.facing = { x: Math.sign(dx), y: 0 };
+        else if (dy !== 0) this.facing = { x: 0, y: Math.sign(dy) };
+
         // Bounds check
         if (newX >= 0 && newX < this.gridSize && newY >= 0 && newY < this.gridSize) {
-            // Check if blocked by machine
-            if (!this.machines.has(`${newX},${newY}`)) {
+            // Check if blocked by machine, belt, skup or blat
+            if (this.isWalkable(newX, newY)) {
                 this.playerPos.x = newX;
                 this.playerPos.y = newY;
-                this.updatePlayerVisualPosition();
             }
         }
         
-        // Update facing direction
-        if (dx !== 0) this.facing = { x: Math.sign(dx), y: 0 };
-        else if (dy !== 0) this.facing = { x: 0, y: Math.sign(dy) };
+        this.updatePlayerVisualPosition();
+    }
+
+    isWalkable(x, y) {
+        // Not walkable if:
+        // 1. Machine
+        if (this.machines.has(`${x},${y}`)) return false;
+        // 2. Belt
+        if (x === 0 || (y === 7 && x > 0)) return false;
+        // 3. Skup
+        if (x === 7 && y === 0) return false;
+        // 4. Blat
+        if (this.isBlat(x, y)) return false;
+
+        return true;
     }
 
     updatePlayerVisualPosition() {
         this.playerContainer.x = this.playerPos.x * this.tileSize + this.tileSize / 2;
         this.playerContainer.y = this.playerPos.y * this.tileSize + this.tileSize / 2;
+        
+        // Rotate indicator based on facing
+        if (this.facing.x === 1) this.directionIndicator.setAngle(90);
+        else if (this.facing.x === -1) this.directionIndicator.setAngle(-90);
+        else if (this.facing.y === 1) this.directionIndicator.setAngle(180);
+        else if (this.facing.y === -1) this.directionIndicator.setAngle(0);
     }
 
     handleInteraction() {
