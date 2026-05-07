@@ -70,7 +70,7 @@ export default class CleanerScene extends Phaser.Scene {
         for (let y = 0; y < this.gridSize; y++) {
             for (let x = 0; x < this.gridSize; x++) {
                 const px = x * this.tileSize + this.tileSize / 2;
-                const py = y * this.tileSize + this.tileSize / 2;
+                const py = y * this.tileSize + this.tileSize / 2 + 50;
                 
                 let color = 0x333344; // Default floor
                 
@@ -102,16 +102,16 @@ export default class CleanerScene extends Phaser.Scene {
         ];
 
         machineData.forEach(data => {
-            const m = new Machine(this, data.x * this.tileSize + this.tileSize / 2, data.y * this.tileSize + this.tileSize / 2, data.type);
+            const m = new Machine(this, data.x * this.tileSize + this.tileSize / 2, data.y * this.tileSize + this.tileSize / 2 + 50, data.type);
             this.machines.set(`${data.x},${data.y}`, m);
         });
     }
 
     setupUI() {
-        this.uiBg = this.add.rectangle(0, 0, this.cameras.main.width, 40, 0x000000).setOrigin(0).setAlpha(0.8);
-        this.timerText = this.add.text(20, 10, `Czas: ${this.timeLeft}s`, { fontSize: '20px', fill: '#fff' });
-        this.wsadyText = this.add.text(this.cameras.main.width / 2, 10, `Wsady: ${this.wsady}/8`, { fontSize: '20px', fill: '#fff' }).setOrigin(0.5, 0);
-        this.scoreText = this.add.text(this.cameras.main.width - 20, 10, `Punkty: ${this.cleanerScore}`, { fontSize: '20px', fill: '#fff' }).setOrigin(1, 0);
+        this.uiBg = this.add.rectangle(0, 0, this.cameras.main.width, 50, 0x000000).setOrigin(0).setAlpha(0.8);
+        this.timerText = this.add.text(20, 15, `Czas: ${this.timeLeft}s`, { fontSize: '20px', fill: '#fff' });
+        this.wsadyText = this.add.text(this.cameras.main.width / 2, 15, `Wsady: ${this.wsady}/8`, { fontSize: '20px', fill: '#fff' }).setOrigin(0.5, 0);
+        this.scoreText = this.add.text(this.cameras.main.width - 20, 15, `Punkty: ${this.cleanerScore}`, { fontSize: '20px', fill: '#fff' }).setOrigin(1, 0);
     }
 
     setupControls() {
@@ -154,6 +154,23 @@ export default class CleanerScene extends Phaser.Scene {
         if (newX >= 0 && newX < this.gridSize && newY >= 0 && newY < this.gridSize) {
             // Check if blocked by machine, belt, skup or blat
             if (this.isWalkable(newX, newY)) {
+                // Handle kicking items on the floor
+                const targetKey = `${newX},${newY}`;
+                if (this.blaty.has(targetKey)) {
+                    let kickX = newX + dx;
+                    let kickY = newY + dy;
+                    if (kickX >= 0 && kickX < this.gridSize && kickY >= 0 && kickY < this.gridSize) {
+                        let canKickHere = (this.isWalkable(kickX, kickY) || this.isBlat(kickX, kickY)) && !this.blaty.has(`${kickX},${kickY}`);
+                        if (canKickHere) {
+                            let item = this.blaty.get(targetKey);
+                            this.blaty.delete(targetKey);
+                            this.blaty.set(`${kickX},${kickY}`, item);
+                            item.sprite.x = kickX * this.tileSize + this.tileSize / 2;
+                            item.sprite.y = kickY * this.tileSize + this.tileSize / 2 + 50;
+                        }
+                    }
+                }
+                
                 this.playerPos.x = newX;
                 this.playerPos.y = newY;
             }
@@ -178,7 +195,7 @@ export default class CleanerScene extends Phaser.Scene {
 
     updatePlayerVisualPosition() {
         this.playerContainer.x = this.playerPos.x * this.tileSize + this.tileSize / 2;
-        this.playerContainer.y = this.playerPos.y * this.tileSize + this.tileSize / 2;
+        this.playerContainer.y = this.playerPos.y * this.tileSize + this.tileSize / 2 + 50;
         
         // Rotate indicator based on facing
         if (this.facing.x === 1) {
@@ -255,19 +272,19 @@ export default class CleanerScene extends Phaser.Scene {
             return;
         }
 
-        // 4. Check for Blat interaction
-        if (this.isBlat(targetX, targetY)) {
+        // 4. Check for Blat or Floor interaction
+        if (this.isBlat(targetX, targetY) || this.isWalkable(targetX, targetY)) {
             if (this.heldItem) {
                 if (!this.blaty.has(key)) {
-                    // Put on blat
-                    const sprite = this.add.rectangle(targetX * this.tileSize + this.tileSize / 2, targetY * this.tileSize + this.tileSize / 2, 40, 40, this.getItemColor(this.heldItem.type));
+                    // Put on blat or floor
+                    const sprite = this.add.rectangle(targetX * this.tileSize + this.tileSize / 2, targetY * this.tileSize + this.tileSize / 2 + 50, 40, 40, this.getItemColor(this.heldItem.type));
                     this.blaty.set(key, { type: this.heldItem.type, sprite: sprite });
                     this.heldItem = null;
                     this.heldItemSprite.setVisible(false);
                 }
             } else {
                 if (this.blaty.has(key)) {
-                    // Pick up from blat
+                    // Pick up from blat or floor
                     const item = this.blaty.get(key);
                     this.pickUpItem(item.type);
                     item.sprite.destroy();
@@ -291,9 +308,9 @@ export default class CleanerScene extends Phaser.Scene {
     getItemColor(type) {
         switch(type) {
             case 'CLEAN': return 0x4CAF50;
-            case 'RUBBER': return 0x555555;
-            case 'CONCRETE': return 0xCCCCCC;
-            case 'WOOD': return 0xFF9800;
+            case 'RUBBER': return 0x000000;
+            case 'CONCRETE': return 0xFFFFFF;
+            case 'WOOD': return 0xFFFF00;
             case 'GRUDA': return 0xFFD700;
             default: return 0xffffff;
         }
@@ -325,7 +342,7 @@ export default class CleanerScene extends Phaser.Scene {
     spawnBeltItem() {
         const types = ['RUBBER', 'CONCRETE', 'WOOD', 'CLEAN'];
         const type = Phaser.Utils.Array.GetRandom(types);
-        const sprite = this.add.rectangle(this.tileSize / 2, this.tileSize / 2, 40, 40, this.getItemColor(type)).setDepth(5);
+        const sprite = this.add.rectangle(this.tileSize / 2, this.tileSize / 2 + 50, 40, 40, this.getItemColor(type)).setDepth(5);
         
         this.itemsOnBelt.push({
             gridX: 0,
@@ -366,7 +383,7 @@ export default class CleanerScene extends Phaser.Scene {
             }
             
             item.sprite.x = item.gridX * this.tileSize + this.tileSize / 2;
-            item.sprite.y = item.gridY * this.tileSize + this.tileSize / 2;
+            item.sprite.y = item.gridY * this.tileSize + this.tileSize / 2 + 50;
         }
 
         // Update machines
