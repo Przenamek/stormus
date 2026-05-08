@@ -43,12 +43,10 @@ export default class CleanerScene extends Phaser.Scene {
         this.setupMachines();
 
         // Setup Player
-        this.player = this.add.circle(0, 0, 40, 0xffffff).setStrokeStyle(4, 0x333333);
+        this.player = this.add.image(0, 0, 'stormus-down').setDisplaySize(110, 110);
         this.heldItemSprite = this.add.rectangle(20, -20, 24, 24, 0x000000).setVisible(false);
-        // Triangle indicator for direction (15px)
-        this.directionIndicator = this.add.triangle(0, 0, 0, -42, 7.5, -27, -7.5, -27, 0xff0000);
         
-        this.playerContainer = this.add.container(0, 0, [this.player, this.heldItemSprite, this.directionIndicator]);
+        this.playerContainer = this.add.container(0, 0, [this.player, this.heldItemSprite]);
         this.updatePlayerVisualPosition();
 
         // UI
@@ -197,18 +195,18 @@ export default class CleanerScene extends Phaser.Scene {
         this.playerContainer.x = this.playerPos.x * this.tileSize + this.tileSize / 2;
         this.playerContainer.y = this.playerPos.y * this.tileSize + this.tileSize / 2 + 50;
         
-        // Rotate indicator based on facing
+        // Update player sprite based on facing direction
         if (this.facing.x === 1) {
-            this.directionIndicator.setAngle(90);
+            this.player.setTexture('stormus-right');
             this.heldItemSprite.setPosition(40, 0);
         } else if (this.facing.x === -1) {
-            this.directionIndicator.setAngle(-90);
+            this.player.setTexture('stormus-left');
             this.heldItemSprite.setPosition(-40, 0);
         } else if (this.facing.y === 1) {
-            this.directionIndicator.setAngle(180);
+            this.player.setTexture('stormus-down');
             this.heldItemSprite.setPosition(0, 40);
         } else if (this.facing.y === -1) {
-            this.directionIndicator.setAngle(0);
+            this.player.setTexture('stormus-up');
             this.heldItemSprite.setPosition(0, -40);
         }
     }
