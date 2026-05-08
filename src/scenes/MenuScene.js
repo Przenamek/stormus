@@ -35,28 +35,7 @@ export default class MenuScene extends Phaser.Scene {
         }).setOrigin(0.5);
 
         startBtn.on('pointerdown', () => {
-            this.scene.start('RunnerScene');
-        });
-        
-        // Przycisk Testuj Oczyszczalnię
-        const testBtn = this.add.rectangle(width / 2, height * 0.78, 300, 50, 0x2196F3).setInteractive();
-        this.add.text(width / 2, height * 0.78, 'TESTUJ OCZYSZCZALNIĘ', {
-            fontSize: '20px',
-            fontFamily: 'Arial',
-            fill: '#ffffff',
-            fontStyle: 'bold'
-        }).setOrigin(0.5);
-
-        testBtn.on('pointerdown', () => {
-            this.scene.start('CleanerScene', { runnerScore: 1000 });
-        });
-        
-        testBtn.on('pointerover', () => {
-            testBtn.setFillStyle(0x1e88e5);
-        });
-        
-        testBtn.on('pointerout', () => {
-            testBtn.setFillStyle(0x2196F3);
+            this.scene.start('CleanerScene', { runnerScore: 0 });
         });
     }
 }

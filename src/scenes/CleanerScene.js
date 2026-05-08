@@ -11,7 +11,7 @@ export default class CleanerScene extends Phaser.Scene {
         this.runnerScore = data.runnerScore || 0;
         this.cleanerScore = 0;
         this.wsady = 0;
-        this.timeLeft = 60;
+        this.timeLeft = 180;
         this.gridSize = 8;
         this.tileSize = 110;
         

@@ -1,6 +1,5 @@
 import BootScene from './scenes/BootScene.js';
 import MenuScene from './scenes/MenuScene.js';
-import RunnerScene from './scenes/RunnerScene.js';
 import CleanerScene from './scenes/CleanerScene.js';
 import ResultScene from './scenes/ResultScene.js';
 
@@ -16,7 +15,7 @@ const config = {
             debug: false
         }
     },
-    scene: [BootScene, MenuScene, RunnerScene, CleanerScene, ResultScene],
+    scene: [BootScene, MenuScene, CleanerScene, ResultScene],
     scale: {
         mode: Phaser.Scale.FIT,
         autoCenter: Phaser.Scale.CENTER_BOTH
