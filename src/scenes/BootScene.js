@@ -4,8 +4,8 @@ export default class BootScene extends Phaser.Scene {
     }
 
     preload() {
-        // Na MVP nie ładujemy zewnętrznych zasobów,
-        // będziemy polegać na Phaser Graphics.
+        this.load.image('spaw-idle', 'assets/sprites/brak-spawania.png');
+        this.load.image('spaw-working', 'assets/sprites/spawanie.png');
     }
 
     create() {

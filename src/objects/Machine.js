@@ -18,20 +18,28 @@ export default class Machine extends Phaser.GameObjects.Container {
             case 'SPAWARKA': color = 0xFF0000; label = 'SPAW'; break;
         }
 
-        // Main body
-        this.bg = scene.add.rectangle(0, 0, 100, 100, color).setStrokeStyle(4, 0x333333);
-        
-        // Label
+        // Main body & Label
         const textColor = (type === 'BETON' || type === 'DREWNO') ? '#000000' : '#ffffff';
-        this.title = scene.add.text(0, -20, label, { fontSize: '16px', fill: textColor, fontStyle: 'bold' }).setOrigin(0.5);
+        if (type === 'SPAWARKA') {
+            this.bg = scene.add.image(0, 0, 'spaw-idle').setDisplaySize(110, 110);
+            this.title = scene.add.text(0, -35, '', { fontSize: '16px', fill: textColor, fontStyle: 'bold' }).setOrigin(0.5).setVisible(false);
+        } else {
+            this.bg = scene.add.rectangle(0, 0, 100, 100, color).setStrokeStyle(4, 0x333333);
+            this.title = scene.add.text(0, -20, label, { fontSize: '16px', fill: textColor, fontStyle: 'bold' }).setOrigin(0.5);
+        }
         
         // Counter for Spawarka
-        this.counterText = scene.add.text(0, 10, '', { fontSize: '20px', fill: textColor, fontStyle: 'bold' }).setOrigin(0.5);
+        this.counterText = scene.add.text(0, 10, '', { fontSize: '24px', fill: '#ffffff', fontStyle: 'bold' }).setOrigin(0.5).setStroke('#000000', 4);
         if (type === 'SPAWARKA') this.counterText.setText('0/3');
 
         // Progress bar container
-        this.progressBarBg = scene.add.rectangle(0, -60, 100, 10, 0x333333).setVisible(false);
-        this.progressBar = scene.add.rectangle(-50, -60, 0, 10, 0x00ff00).setOrigin(0, 0.5).setVisible(false);
+        if (type === 'SPAWARKA') {
+            this.progressBarBg = scene.add.rectangle(0, 45, 100, 10, 0x333333).setVisible(false);
+            this.progressBar = scene.add.rectangle(-50, 45, 0, 10, 0x00ff00).setOrigin(0, 0.5).setVisible(false);
+        } else {
+            this.progressBarBg = scene.add.rectangle(0, -60, 100, 10, 0x333333).setVisible(false);
+            this.progressBar = scene.add.rectangle(-50, -60, 0, 10, 0x00ff00).setOrigin(0, 0.5).setVisible(false);
+        }
 
         // Broken "X"
         this.brokenX = scene.add.text(0, 0, 'X', { fontSize: '64px', fill: '#ff0000', fontStyle: 'bold' }).setOrigin(0.5).setVisible(false);
@@ -67,7 +75,12 @@ export default class Machine extends Phaser.GameObjects.Container {
     breakDown() {
         this.state = 'BROKEN';
         this.brokenTimer = 4000;
-        this.bg.setFillStyle(0xff0000, 0.5);
+        if (this.machineType === 'SPAWARKA') {
+            this.bg.setTint(0xff0000);
+            this.bg.setAlpha(0.5);
+        } else {
+            this.bg.setFillStyle(0xff0000, 0.5);
+        }
         this.brokenX.setVisible(true);
         this.progressBar.setVisible(false);
         this.progressBarBg.setVisible(false);
@@ -80,7 +93,10 @@ export default class Machine extends Phaser.GameObjects.Container {
         this.progressBar.width = 0;
         this.progressBar.setVisible(true);
         this.progressBarBg.setVisible(true);
-        if (this.machineType === 'SPAWARKA') this.counterText.setText('3/3 ▶');
+        if (this.machineType === 'SPAWARKA') {
+            this.bg.setTexture('spaw-working');
+            this.counterText.setText('3/3 ▶');
+        }
     }
 
     update(time, delta) {
@@ -117,15 +133,19 @@ export default class Machine extends Phaser.GameObjects.Container {
         this.progressBarBg.setVisible(false);
         this.bg.setAlpha(1);
         
-        let color = 0x000000;
-        switch(this.machineType) {
-            case 'OPON': color = 0x000000; break;
-            case 'BETON': color = 0xFFFFFF; break;
-            case 'DREWNO': color = 0xFFFF00; break;
-            case 'SPAWARKA': color = 0xFF0000; break;
+        if (this.machineType === 'SPAWARKA') {
+            this.bg.setTexture('spaw-idle');
+            this.bg.clearTint();
+            this.counterText.setText('0/3');
+        } else {
+            let color = 0x000000;
+            switch(this.machineType) {
+                case 'OPON': color = 0x000000; break;
+                case 'BETON': color = 0xFFFFFF; break;
+                case 'DREWNO': color = 0xFFFF00; break;
+            }
+            this.bg.setFillStyle(color);
         }
-        this.bg.setFillStyle(color);
-        if (this.machineType === 'SPAWARKA') this.counterText.setText('0/3');
     }
 
     takeItem() {
