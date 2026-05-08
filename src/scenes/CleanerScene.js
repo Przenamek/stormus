@@ -1,5 +1,7 @@
 import Machine from '../objects/Machine.js';
 
+const MOVE_INTERVAL = 150;
+
 export default class CleanerScene extends Phaser.Scene {
     constructor() {
         super('CleanerScene');
@@ -17,6 +19,10 @@ export default class CleanerScene extends Phaser.Scene {
         this.playerPos = { x: 1, y: 4 };
         this.heldItem = null; // { type: 'CLEAN'|'RUBBER'|... }
         this.facing = { x: 0, y: 1 }; // Initially facing down
+        
+        // Input state
+        this.activeKeys = [];
+        this.lastMoveTime = 0;
         
         // Game state
         this.itemsOnBelt = [];
@@ -113,31 +119,54 @@ export default class CleanerScene extends Phaser.Scene {
     }
 
     setupControls() {
-        this.cursors = this.input.keyboard.createCursorKeys();
-        this.keys = this.input.keyboard.addKeys('W,A,S,D,ALT');
         this.spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+
+        const keyMap = {
+            'KeyW': 'UP', 'ArrowUp': 'UP',
+            'KeyS': 'DOWN', 'ArrowDown': 'DOWN',
+            'KeyA': 'LEFT', 'ArrowLeft': 'LEFT',
+            'KeyD': 'RIGHT', 'ArrowRight': 'RIGHT'
+        };
 
         this.input.keyboard.on('keydown', (event) => {
             if (this.timeLeft <= 0) return;
 
-            let move = { x: 0, y: 0 };
-            let isAlt = this.keys.ALT.isDown;
-            let step = isAlt ? 2 : 1;
-
-            if (event.code === 'ArrowUp' || event.code === 'KeyW') move.y = -step;
-            else if (event.code === 'ArrowDown' || event.code === 'KeyS') move.y = step;
-            else if (event.code === 'ArrowLeft' || event.code === 'KeyA') move.x = -step;
-            else if (event.code === 'ArrowRight' || event.code === 'KeyD') move.x = step;
-            
-            if (move.x !== 0 || move.y !== 0) {
-                this.tryMove(move.x, move.y);
-            }
-
             if (event.code === 'Space' || event.key === ' ') {
                 this.handleInteraction();
                 event.preventDefault();
+                return;
+            }
+
+            let mappedKey = keyMap[event.code];
+            if (mappedKey && !this.activeKeys.includes(mappedKey)) {
+                this.activeKeys.push(mappedKey);
+                // Trigger immediate move if moving from idle
+                if (this.activeKeys.length === 1 && this.time.now > this.lastMoveTime + MOVE_INTERVAL) {
+                    this.executeMove(mappedKey);
+                }
             }
         });
+
+        this.input.keyboard.on('keyup', (event) => {
+            let mappedKey = keyMap[event.code];
+            if (mappedKey) {
+                this.activeKeys = this.activeKeys.filter(k => k !== mappedKey);
+            }
+        });
+    }
+
+    executeMove(direction) {
+        this.lastMoveTime = this.time.now;
+        let dx = 0;
+        let dy = 0;
+        if (direction === 'UP') dy = -1;
+        else if (direction === 'DOWN') dy = 1;
+        else if (direction === 'LEFT') dx = -1;
+        else if (direction === 'RIGHT') dx = 1;
+
+        if (dx !== 0 || dy !== 0) {
+            this.tryMove(dx, dy);
+        }
     }
 
     tryMove(dx, dy) {
@@ -377,6 +406,12 @@ export default class CleanerScene extends Phaser.Scene {
 
     update(time, delta) {
         if (this.timeLeft <= 0) return;
+
+        // Smooth movement polling
+        if (this.activeKeys.length > 0 && time > this.lastMoveTime + MOVE_INTERVAL) {
+            const currentDir = this.activeKeys[this.activeKeys.length - 1];
+            this.executeMove(currentDir);
+        }
 
         // Spawn items
         this.spawnTimer -= delta;
